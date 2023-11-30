@@ -1,5 +1,6 @@
 #!/bin/python3
 
+from abc import ABC, abstractmethod
 import os
 import sys
 import argparse
@@ -8,31 +9,47 @@ import csv.main
 
 class Pyhelptex:
     def __init__(self):
-        self.functions = {}
+        self.script_fn = {}
         self.str_list_of_fns = "Supported cmds: "
         self.empty = True
-        self.__register("csv", csv.main.script_wrapper)
+        self.csv = self.__register("csv", csv.main.CsvFunction("csv"))
 
-    def __register(self, fn_name, real_fn):
+    def __register(self, fn_name, fn_obj):
         if self.empty:
             self.str_list_of_fns = self.str_list_of_fns + str(fn_name)
         else:
             self.str_list_of_fns = self.str_list_of_fns + ", " + str(fn_name)
-        self.functions[fn_name] = real_fn
+
+        self.script_fn[fn_name] = fn_obj.call_script
         self.empty = False
+        return fn_obj
 
-    def script_call(self, fn_name, arguments, **kwargs):
-        self.fns.functions[fn_name](arguments)
+    def get_str_list_of_fns(self):
+        return self.str_list_of_fns
 
-    def call(self, fn_name, *args):
-        self.fns.functions[fn_name](args)
+    def script_call(self, fn_name, arguments):
+        self.script_fn[fn_name](arguments)
+
+class PyhelptexFunction:
+    @property
+    @abstractmethod
+    def name(self):
+        pass
+    
+    @abstractmethod
+    def call():
+        pass 
+
+    @abstractmethod
+    def call_script():
+        pass
 
 if __name__ == "__main__":
     pyhelptex = Pyhelptex()
 
     parser = argparse.ArgumentParser()
     parser.add_argument
-    parser.add_argument("command", help=fns.str_list_of_fns)
+    parser.add_argument("command", help=pyhelptex.get_str_list_of_fns())
     #example below of voluntary argument
     #parser.add_argument("--foo", '-f', action="store_true", help="foobar")
     parser.add_argument("Other args: used for the called function", nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
@@ -43,7 +60,7 @@ if __name__ == "__main__":
     if len(sys.argv) >= 1:
         arguments.pop(0)
 
-    if args.command in pyhelptex.functions:
+    if args.command in pyhelptex.script_fn:
         pyhelptex.script_call(args.command, arguments)
     else:
         print("Unknown command!")
