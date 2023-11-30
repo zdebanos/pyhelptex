@@ -1,6 +1,5 @@
 #!/bin/python3
 
-from abc import ABC, abstractmethod
 import os
 import sys
 import argparse
@@ -30,19 +29,6 @@ class Pyhelptex:
     def script_call(self, fn_name, arguments):
         self.script_fn[fn_name](arguments)
 
-class PyhelptexFunction:
-    @property
-    @abstractmethod
-    def name(self):
-        pass
-    
-    @abstractmethod
-    def call():
-        pass 
-
-    @abstractmethod
-    def call_script():
-        pass
 
 if __name__ == "__main__":
     pyhelptex = Pyhelptex()
